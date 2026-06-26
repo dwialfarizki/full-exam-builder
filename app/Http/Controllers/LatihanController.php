@@ -213,4 +213,53 @@ class LatihanController extends Controller
         return redirect()->route('latihan.exam', $soal->latihan_id)
                          ->with('success', 'Soal berhasil diperbarui!');
     }
+
+    public function editLatihan($id)
+    {
+        $latihan = Latihan::findOrFail($id);
+        return view('latihan.edit', compact('latihan'));
+    }
+
+    // Memproses pembaruan data paket latihan ke database
+    public function updateLatihan(Request $request, $id)
+    {
+        $latihan = Latihan::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'nama' => 'required|string|max:255',
+            'keterangan' => 'nullable|string',
+            'umpan_balik' => 'required|in:langsung,akhir_tes,tidak_tampil',
+            'tampilkan_nilai' => 'required|in:skor_saja,skor_dan_detail,sembunyikan',
+            'pertanyaan_per_halaman' => 'required|string',
+            'jenis_pemilihan' => 'required|in:berurutan,acak_semua,acak_sebagian',
+            'acak_jawaban' => 'required|in:ya,tidak',
+            'tampilkan_kategori' => 'required|in:ya,tidak',
+            'sembunyikan_judul' => 'required|in:ya,tidak',
+            'maks_percobaan' => 'nullable|integer',
+            'start_deadline' => 'nullable|date',
+            'end_deadline' => 'nullable|date',
+            'passing_grade' => 'nullable|integer|min:0|max:100',
+            'teks_akhir' => 'nullable|string',
+        ]);
+
+        // Memetakan checkbox boolean
+        $validatedData['negative_score'] = $request->has('negative_score');
+        $validatedData['save_correct'] = $request->has('save_correct');
+        $validatedData['check_answer'] = $request->has('check_answer');
+        $validatedData['time_control'] = $request->has('time_control');
+        $validatedData['perbarui_jalur'] = $request->has('perbarui_jalur');
+
+        if (!$request->has('enable_start')) {
+            $validatedData['start_deadline'] = null;
+        }
+        if (!$request->has('enable_end')) {
+            $validatedData['end_deadline'] = null;
+        }
+
+        // Lakukan pembaruan data
+        $latihan->update($validatedData);
+
+        return redirect()->route('dashboard')
+                         ->with('success', 'Paket latihan berhasil diperbarui!');
+    }
 }

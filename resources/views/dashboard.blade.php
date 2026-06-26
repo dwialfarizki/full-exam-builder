@@ -300,7 +300,7 @@
                                             class="absolute right-0 top-8 w-64 bg-white border border-gray-200 rounded-xl shadow-xl py-1.5 z-50 text-xs text-gray-700 font-normal"
                                             style="display: none;">
 
-                                            <a href="#"
+                                            <a href="{{ route('latihan.edit', $exam->id) }}"
                                                 class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 transition text-left">
                                                 <x-lucide-pencil class="w-3.5 h-3.5 text-blue-500" />
                                                 <span>Sunting</span>

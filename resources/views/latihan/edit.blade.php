@@ -115,25 +115,29 @@
                     <span>&rsaquo;</span>
                     <span>Mata Kuliah</span>
                     <span>&rsaquo;</span>
-                    <span class="text-blue-600 font-medium">Tambah Latihan</span>
+                    <span class="text-blue-600 font-medium">Edit Latihan</span>
                 </div>
             </header>
 
             <main class="bg-white rounded-2xl border border-gray-200 shadow-sm mx-8 mb-6 p-8">
                 <div class="mb-6">
-                    <h1 class="text-xl font-bold text-gray-900">Tambah Latihan</h1>
+                    <h1 class="text-xl font-bold text-gray-900">Edit Latihan</h1>
                 </div>
 
-                <form action="{{ route('latihan.store') }}" method="POST" class="space-y-6 pb-12"
-                    x-data="{ showStartDeadline: false, showEndDeadline: false }">
+                <form action="{{ route('latihan.update', $latihan->id) }}" method="POST" class="space-y-6 pb-12"
+                    x-data="{
+                        showStartDeadline: {{ old('enable_start', $latihan->start_deadline ? 'true' : 'false') }},
+                        showEndDeadline: {{ old('enable_end', $latihan->end_deadline ? 'true' : 'false') }}
+                    }">
                     @csrf
+                    @method('PUT')
 
                     <div>
                         <label class="text-xs font-semibold text-gray-700 block mb-2">
                             Nama Latihan <span class="text-red-500">*</span>
                         </label>
                         <div class="flex items-center space-x-2">
-                            <input type="text" name="nama" placeholder="Masukkan judul" required
+                            <input type="text" name="nama" value="{{ old('nama', $latihan->nama) }}" placeholder="Masukkan judul" required
                                 class="flex-1 border-gray-200 rounded-lg text-sm py-2.5 px-4 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400">
                             <button type="button"
                                 class="p-2.5 bg-sky-100 hover:bg-sky-200 text-sky-600 rounded-lg transition">
@@ -242,7 +246,7 @@
                                 </button>
                             </div>
                             <textarea name="keterangan" rows="8" class="w-full border-none focus:ring-0 text-sm p-4 placeholder-gray-400"
-                                placeholder="Type here..."></textarea>
+                                placeholder="Type here...">{{ old('keterangan', $latihan->keterangan) }}</textarea>
                         </div>
                         <div class="text-xs text-gray-400 mt-1.5">0 / 5000 characters</div>
                     </div>
@@ -251,15 +255,12 @@
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Umpan Balik</label>
                         <select name="umpan_balik" required
                             class="w-full border-gray-200 rounded-lg text-sm py-2.5 px-4 bg-white text-gray-700 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="" disabled selected>Pilih opsi umpan balik...</option>
-                            <option value="langsung">Tampilkan langsung setelah pertanyaan dijawab</option>
-                            <option value="akhir_tes">Tampilkan di akhir pengerjaan tes saja</option>
-                            <option value="tidak_tampil">Jangan tampilkan umpan balik kepada peserta</option>
+                            <option value="langsung" {{ old('umpan_balik', $latihan->umpan_balik) == 'langsung' ? 'selected' : '' }}>Tampilkan langsung setelah pertanyaan dijawab</option>
+                            <option value="akhir_tes" {{ old('umpan_balik', $latihan->umpan_balik) == 'akhir_tes' ? 'selected' : '' }}>Tampilkan di akhir pengerjaan tes saja</option>
+                            <option value="tidak_tampil" {{ old('umpan_balik', $latihan->umpan_balik) == 'tidak_tampil' ? 'selected' : '' }}>Jangan tampilkan umpan balik kepada peserta</option>
                         </select>
                         <p class="text-[11px] text-gray-400 mt-1.5 leading-relaxed">
-                            Bagaimana sebaiknya umpan balik/komentar untuk setiap soal ditampilkan? Opsi ini menentukan
-                            cara penampilannya kepada peserta saat mengerjakan tes. Kami menyarankan Anda untuk mencoba
-                            berbagai opsi dengan mengedit pengaturan tes sebelum peserta mengerjakannya.
+                            Bagaimana sebaiknya umpan balik/komentar untuk setiap soal ditampilkan? Opsi ini menentukan cara penampilannya kepada peserta saat mengerjakan tes. Kami menyarankan Anda untuk mencoba berbagai opsi dengan mengedit pengaturan tes sebelum peserta mengerjakannya.
                         </p>
                     </div>
 
@@ -267,10 +268,9 @@
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Tampilkan Nilai Kepada Siswa</label>
                         <select name="tampilkan_nilai" required
                             class="w-full border-gray-200 rounded-lg text-sm py-2.5 px-4 bg-white text-gray-700 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="" disabled selected>Pilih opsi penampilan nilai...</option>
-                            <option value="skor_saja">Tampilkan skor akhir saja</option>
-                            <option value="skor_dan_detail">Tampilkan skor akhir beserta detail lembar jawaban</option>
-                            <option value="sembunyikan">Sembunyikan nilai dari siswa (Hanya Pengajar)</option>
+                            <option value="skor_saja" {{ old('tampilkan_nilai', $latihan->tampilkan_nilai) == 'skor_saja' ? 'selected' : '' }}>Tampilkan skor akhir saja</option>
+                            <option value="skor_dan_detail" {{ old('tampilkan_nilai', $latihan->tampilkan_nilai) == 'skor_dan_detail' ? 'selected' : '' }}>Tampilkan skor akhir beserta detail lembar jawaban</option>
+                            <option value="sembunyikan" {{ old('tampilkan_nilai', $latihan->tampilkan_nilai) == 'sembunyikan' ? 'selected' : '' }}>Sembunyikan nilai dari siswa (Hanya Pengajar)</option>
                         </select>
                     </div>
 
@@ -278,12 +278,12 @@
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Pertanyaan per Halaman</label>
                         <div class="flex items-center space-x-6 text-xs text-gray-700 pt-1">
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="pertanyaan_per_halaman" value="khusus"
+                                <input type="radio" name="pertanyaan_per_halaman" value="khusus" {{ old('pertanyaan_per_halaman', $latihan->pertanyaan_per_halaman) == 'khusus' ? 'checked' : '' }}
                                     class="w-3.5 h-3.5 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span>Pada Halaman Khusus</span>
                             </label>
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="pertanyaan_per_halaman" value="sequential" checked
+                                <input type="radio" name="pertanyaan_per_halaman" value="sequential" {{ old('pertanyaan_per_halaman', $latihan->pertanyaan_per_halaman) == 'sequential' || !old('pertanyaan_per_halaman', $latihan->pertanyaan_per_halaman) ? 'checked' : '' }}
                                     class="w-3.5 h-3.5 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span>Satu Pertanyaan per Halaman (Sequential)</span>
                             </label>
@@ -294,10 +294,9 @@
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Jenis Pemilihan Soal</label>
                         <select name="jenis_pemilihan" required
                             class="w-full border-gray-200 rounded-lg text-sm py-2.5 px-4 bg-white text-gray-700 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="" disabled selected>Pilih jenis pemilihan soal...</option>
-                            <option value="berurutan">Gunakan semua soal secara berurutan</option>
-                            <option value="acak_semua">Acak urutan semua soal yang tersedia</option>
-                            <option value="acak_sebagian">Pilih sebagian soal secara acak dari bank soal</option>
+                            <option value="berurutan" {{ old('jenis_pemilihan', $latihan->jenis_pemilihan) == 'berurutan' ? 'selected' : '' }}>Gunakan semua soal secara berurutan</option>
+                            <option value="acak_semua" {{ old('jenis_pemilihan', $latihan->jenis_pemilihan) == 'acak_semua' ? 'selected' : '' }}>Acak urutan semua soal yang tersedia</option>
+                            <option value="acak_sebagian" {{ old('jenis_pemilihan', $latihan->jenis_pemilihan) == 'acak_sebagian' ? 'selected' : '' }}>Pilih sebagian soal secara acak dari bank soal</option>
                         </select>
                     </div>
 
@@ -305,12 +304,12 @@
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Acak Jawaban</label>
                         <div class="flex items-center space-x-6 text-xs text-gray-700 pt-1">
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="acak_jawaban" value="ya"
+                                <input type="radio" name="acak_jawaban" value="ya" {{ old('acak_jawaban', $latihan->acak_jawaban) == 'ya' ? 'checked' : '' }}
                                     class="w-3.5 h-3.5 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span>Ya</span>
                             </label>
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="acak_jawaban" value="tidak" checked
+                                <input type="radio" name="acak_jawaban" value="tidak" {{ old('acak_jawaban', $latihan->acak_jawaban) == 'tidak' || !old('acak_jawaban', $latihan->acak_jawaban) ? 'checked' : '' }}
                                     class="w-3.5 h-3.5 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span>Tidak</span>
                             </label>
@@ -321,12 +320,12 @@
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Tampilkan Kategori Pertanyaan</label>
                         <div class="flex items-center space-x-6 text-xs text-gray-700 pt-1">
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="tampilkan_kategori" value="ya"
+                                <input type="radio" name="tampilkan_kategori" value="ya" {{ old('tampilkan_kategori', $latihan->tampilkan_kategori) == 'ya' ? 'checked' : '' }}
                                     class="w-3.5 h-3.5 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span>Ya</span>
                             </label>
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="tampilkan_kategori" value="tidak" checked
+                                <input type="radio" name="tampilkan_kategori" value="tidak" {{ old('tampilkan_kategori', $latihan->tampilkan_kategori) == 'tidak' || !old('tampilkan_kategori', $latihan->tampilkan_kategori) ? 'checked' : '' }}
                                     class="w-3.5 h-3.5 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span>Tidak</span>
                             </label>
@@ -337,12 +336,12 @@
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Sembunyikan Judul Pertanyaan</label>
                         <div class="flex items-center space-x-6 text-xs text-gray-700 pt-1">
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="sembunyikan_judul" value="ya"
+                                <input type="radio" name="sembunyikan_judul" value="ya" {{ old('sembunyikan_judul', $latihan->sembunyikan_judul) == 'ya' ? 'checked' : '' }}
                                     class="w-3.5 h-3.5 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span>Ya</span>
                             </label>
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="sembunyikan_judul" value="tidak" checked
+                                <input type="radio" name="sembunyikan_judul" value="tidak" {{ old('sembunyikan_judul', $latihan->sembunyikan_judul) == 'tidak' || !old('sembunyikan_judul', $latihan->sembunyikan_judul) ? 'checked' : '' }}
                                     class="w-3.5 h-3.5 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span>Tidak</span>
                             </label>
@@ -351,7 +350,7 @@
 
                     <div>
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Jumlah Maksimum Percobaan</label>
-                        <input type="number" name="maks_percobaan" placeholder="Masukkan jumlah maksimum percobaan" min="1"
+                        <input type="number" name="maks_percobaan" value="{{ old('maks_percobaan', $latihan->maks_percobaan) }}" placeholder="Masukkan jumlah maksimum percobaan" min="1"
                             class="w-full border-gray-200 rounded-lg text-sm py-2.5 px-4 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400">
                     </div>
 
@@ -363,7 +362,7 @@
                                 <span>Aktifkan waktu mulai</span>
                             </label>
                             <div x-show="showStartDeadline" x-transition class="mt-2 pl-7">
-                                <input type="datetime-local" name="start_deadline"
+                                <input type="datetime-local" name="start_deadline" value="{{ old('start_deadline', $latihan->start_deadline ? \Carbon\Carbon::parse($latihan->start_deadline)->format('Y-m-d\TH:i') : '') }}"
                                     class="w-full max-w-xs border-gray-200 rounded-lg text-xs py-2 px-3 focus:ring-blue-500">
                             </div>
                         </div>
@@ -375,28 +374,28 @@
                                 <span>Aktifkan waktu berakhir</span>
                             </label>
                             <div x-show="showEndDeadline" x-transition class="mt-2 pl-7">
-                                <input type="datetime-local" name="end_deadline"
+                                <input type="datetime-local" name="end_deadline" value="{{ old('end_deadline', $latihan->end_deadline ? \Carbon\Carbon::parse($latihan->end_deadline)->format('Y-m-d\TH:i') : '') }}"
                                     class="w-full max-w-xs border-gray-200 rounded-lg text-xs py-2 px-3 focus:ring-blue-500">
                             </div>
                         </div>
 
                         <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="checkbox" name="negative_score" value="1"
+                            <input type="checkbox" name="negative_score" value="1" {{ old('negative_score', $latihan->negative_score) ? 'checked' : '' }}
                                 class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                             <span>Simpan hasil negatif antar soal</span>
                         </label>
                         <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="checkbox" name="save_correct" value="1"
+                            <input type="checkbox" name="save_correct" value="1" {{ old('save_correct', $latihan->save_correct) ? 'checked' : '' }}
                                 class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                             <span>Simpan jawaban benar untuk percobaan berikutnya</span>
                         </label>
                         <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="checkbox" name="check_answer" value="1"
+                            <input type="checkbox" name="check_answer" value="1" {{ old('check_answer', $latihan->check_answer) ? 'checked' : '' }}
                                 class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                             <span>Periksa jawaban saya</span>
                         </label>
                         <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="checkbox" name="time_control" value="1"
+                            <input type="checkbox" name="time_control" value="1" {{ old('time_control', $latihan->time_control) ? 'checked' : '' }}
                                 class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                             <span>Aktifkan kontrol waktu</span>
                         </label>
@@ -405,7 +404,7 @@
                     <div>
                         <label class="text-xs font-semibold text-gray-700 block mb-2">Persentase Lulus</label>
                         <div class="relative">
-                            <input type="number" name="passing_grade" placeholder="Masukkan persentase" min="0" max="100"
+                            <input type="number" name="passing_grade" value="{{ old('passing_grade', $latihan->passing_grade) }}" placeholder="Masukkan persentase" min="0" max="100"
                                 class="w-full border-gray-200 rounded-lg text-sm py-2.5 px-4 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 pr-12 placeholder-gray-400">
                             <span
                                 class="absolute right-0 top-0 h-full flex items-center px-4 text-gray-400 text-sm border-l border-gray-200 bg-gray-50/30 rounded-r-lg">%</span>
@@ -494,14 +493,14 @@
                                 </button>
                             </div>
                             <textarea name="teks_akhir" rows="8" class="w-full border-none focus:ring-0 text-sm p-4 placeholder-gray-400"
-                                placeholder="Type here..."></textarea>
+                                placeholder="Type here...">{{ old('teks_akhir', $latihan->teks_akhir) }}</textarea>
                         </div>
                         <div class="text-xs text-gray-400 mt-1.5">0 / 5000 characters</div>
                     </div>
 
                     <div>
                         <label class="flex items-center space-x-3 text-xs text-gray-700 cursor-pointer">
-                            <input type="checkbox" name="perbarui_jalur" value="1"
+                            <input type="checkbox" name="perbarui_jalur" value="1" {{ old('perbarui_jalur', $latihan->perbarui_jalur) ? 'checked' : '' }}
                                 class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                             <span>Perbarui judul ini di jalur pembelajaran</span>
                         </label>
@@ -510,14 +509,12 @@
                     <div class="pt-4">
                         <button type="submit"
                             class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center space-x-2 transition text-xs">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                                stroke-linecap="round" stroke-linejoin="round"
-                                class="lucide lucide-plus w-3.5 h-3.5">
-                                <line x1="12" x2="12" y1="5" y2="19" />
-                                <line x1="5" x2="19" y1="12" y2="12" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-save w-3.5 h-3.5">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/>
+                                <polyline points="7 3 7 8 15 8"/>
                             </svg>
-                            <span>Lanjut Ke Pertanyaan</span>
+                            <span>Simpan Perubahan</span>
                         </button>
                     </div>
                 </form>

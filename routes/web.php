@@ -47,6 +47,9 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/latihan/exam/soal/{id}', [LatihanController::class, 'destroySoal'])
         ->name('latihan.exam.destroy');
+
+    Route::get('/latihan/edit/{id}', [LatihanController::class, 'editLatihan'])->name('latihan.edit');
+    Route::put('/latihan/update/{id}', [LatihanController::class, 'updateLatihan'])->name('latihan.update');
 });
 
 require __DIR__.'/auth.php';
